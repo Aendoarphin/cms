@@ -1,8 +1,28 @@
 import express from "express";
 import cors from "cors";
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { Firestore, getFirestore, addDoc, collection } from "firebase/firestore";
 import createCollection from "./scripts/createCollection";
+
+/****************     addUser.tsx     *********************************/
+const addUser = async() =>{
+  try {
+    const docRef = await addDoc(collection(db, "users"), {
+      first: "Ada",
+      last: "Lovelace",
+      born: 1815
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+  
+}
+
+function checkFirebase(db_instance: Firestore) { 
+  db_instance ? console.log("Firebase OK") : console.log("Firebase ERROR");
+}
+
 
 const app = express();
 const corsOptions = {
@@ -22,9 +42,18 @@ const firebaseConfig = {
 const firebase = initializeApp(firebaseConfig);
 const db = getFirestore(firebase);
 
-app.get("/api", (req, res) => {
-  let usersCollection = createCollection(db, "users", {});
-  res.send(usersCollection);
+checkFirebase(db);
+
+// TODO: set up basic routing
+
+const router = express.Router();
+
+router.all("*", (req, res, next) => {
+  next();
+});
+
+app.get("/", (req, res) => {
+  res.send("home/logon");
 });
 
 app.listen(3000, () => {
