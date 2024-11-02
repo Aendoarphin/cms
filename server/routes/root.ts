@@ -1,9 +1,12 @@
 import { Router } from "express";
+import { addUser } from "../scripts/user";
+import { db } from "../server";
 
 const rootRouter: Router = Router();
 
 rootRouter.get("/", (req, res) => {
-    res.send("logon");
+    const { userName, userId, userPw, userEmail, userRole } = req.body;
+    addUser(db, "users", userName, userId, userPw, userEmail, userRole);
 });
 
 rootRouter.delete("/logout", (req, res) => {

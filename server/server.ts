@@ -11,6 +11,7 @@ import { rootRouter } from "./routes/root";
 const app = express();
 
 app.use(cors({origin: ["http://localhost:5173"]}));
+app.use(express.json());
 
 // Routes
 const routes = [
@@ -31,7 +32,7 @@ const firebaseConfig = {
   appId: "1:257368545155:web:6d170515fc26f6378b08b6",
 };
 const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
+export const db = getFirestore(firebaseApp);
 db ? console.log("Firebase OK") : console.log("Firebase ERROR");
 
 app.listen(3000, () => {

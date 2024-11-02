@@ -3,7 +3,7 @@
   Fields:
     userId: Unique identifier for the user.
     username: The user's chosen username.
-    passwordHash: Hashed password for authentication.
+    password: Hashed password for authentication.
     email: User's email address.
     role: User's role (e.g., admin, agent, customer).
     createdAt: Timestamp for when the user was created.
@@ -48,3 +48,12 @@
     filePath: Path to the stored file.
     uploadedAt: Timestamp for when the file was uploaded.
     userId: Reference to the users collection (who uploaded the file).
+
+6. User Sessions
+  Description: Stores session information for each user.
+  Fields:
+    sessionId: Unique identifier for the session.
+    userId: Reference to the users collection.
+    createdAt: Timestamp for when the session was created.
+    expiresAt: Timestamp for when the session expires.
+  
