@@ -1,24 +1,25 @@
 import express from "express";
 import cors from "cors";
-import firebase from "firebase/compat/app";
-import "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 import { usersRouter } from "./routes/users";
 import { ticketsRouter } from "./routes/tickets";
 import { authRouter } from "./routes/auth";
 import { rootRouter } from "./routes/root";
 
-import { createCollection } from "./scripts/collection";
-
 const app = express();
 
 app.use(cors({origin: ["http://localhost:5173"]}));
 
 // Routes
-app.use("/", rootRouter);
-app.use("/users", usersRouter);
-app.use("/tickets", ticketsRouter);
-app.use("/auth", authRouter);
+const routes = [
+  { path: "/", router: rootRouter },
+  { path: "/users", router: usersRouter },
+  { path: "/tickets", router: ticketsRouter },
+  { path: "/auth", router: authRouter },
+];
+routes.forEach((route) => app.use(route.path, route.router));
 
 // Firebase
 const firebaseConfig = {
@@ -29,8 +30,8 @@ const firebaseConfig = {
   messagingSenderId: "257368545155",
   appId: "1:257368545155:web:6d170515fc26f6378b08b6",
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 db ? console.log("Firebase OK") : console.log("Firebase ERROR");
 
 app.listen(3000, () => {
