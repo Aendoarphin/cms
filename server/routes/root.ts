@@ -5,8 +5,8 @@ import { db } from "../server";
 const rootRouter: Router = Router();
 
 rootRouter.get("/", (req, res) => {
-    const { userName, userId, userPw, userEmail, userRole } = req.body;
-    addUser(db, "users", userName, userId, userPw, userEmail, userRole);
+    res.send("GET was sent")
+    console.log("GET was sent")
 });
 
 rootRouter.delete("/logout", (req, res) => {

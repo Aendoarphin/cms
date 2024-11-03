@@ -19,7 +19,6 @@ const addUser = async (db: Firestore, collPath: string, data: UserData) => {
 };
 
 const getUser = async (db: Firestore, docPath: string, docId: string) => {
-  // return user data as object (or undefined if not found)
   const docRef = doc(db, docPath, docId);
   const docSnap = await getDoc(docRef);
   return docSnap.exists() ? docSnap.data() : undefined;
