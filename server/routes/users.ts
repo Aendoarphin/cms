@@ -10,9 +10,9 @@ usersRouter.post("/new", (req, res) => {
     console.log("POST was sent")
 })
 
-usersRouter.get("/:userId", (req, res) => {
-    const targetUser = getUser(db, "users", req.params.userId);
-    res.json(targetUser);
+usersRouter.get("/:userId", async(req, res) => {
+    const target = await getUser(db, "users", req.params.userId)
+    res.send(target);
     console.log("GET was sent")
 });
 

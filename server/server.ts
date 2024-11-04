@@ -7,6 +7,7 @@ import { usersRouter } from "./routes/users";
 import { ticketsRouter } from "./routes/tickets";
 import { authRouter } from "./routes/auth";
 import { rootRouter } from "./routes/root";
+import { addUser, getUser } from "./scripts/user";
 
 const app = express();
 

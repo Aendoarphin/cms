@@ -1,11 +1,12 @@
 import { Firestore, deleteDoc, setDoc, getDoc, doc } from "firebase/firestore";
+import { json } from "stream/consumers";
 
 interface UserData {
-  userName: string;
-  userId: string;
-  userPw: string;
-  userEmail: string;
-  userRole: string;
+  userId: string,
+  userName: string,
+  userPw: string,
+  userEmail: string,
+  userRole: string,
 }
 
 const addUser = async (db: Firestore, collPath: string, data: UserData) => {
@@ -21,7 +22,13 @@ const addUser = async (db: Firestore, collPath: string, data: UserData) => {
 const getUser = async (db: Firestore, docPath: string, docId: string) => {
   const docRef = doc(db, docPath, docId);
   const docSnap = await getDoc(docRef);
-  return docSnap.exists() ? docSnap.data() : undefined;
+  if (docSnap.exists()) {
+    console.log(docSnap.data())
+    return docSnap.data();
+  } else {
+    console.log("User does not exist.")
+    return null;
+  }
 };
 
 const setUser = async (
