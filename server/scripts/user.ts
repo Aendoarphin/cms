@@ -9,6 +9,14 @@ interface UserData {
   userRole: string,
 }
 
+interface NewUserData {
+  userId?: string,
+  userName: string,
+  userPw: string,
+  userEmail: string,
+  userRole: string,
+}
+
 const addUser = async (db: Firestore, collPath: string, data: UserData) => {
   const userRef = doc(db, collPath, data.userId);
   const userSnap = await getDoc(userRef);
@@ -35,13 +43,14 @@ const setUser = async (
   db: Firestore,
   docPath: string,
   docId: string,
-  data: UserData
+  data: NewUserData
 ) => {
   try {
     const userRef = doc(db, docPath, docId);
     await setDoc(userRef, data, { merge: true });
+    console.log("User updated.")
   } catch (error) {
-    console.error(error);
+    console.error("Error updating user:", error);
   }
 };
 
