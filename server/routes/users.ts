@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addUser, getUser, setUser } from "../scripts/user";
+import { addUser, getUser, setUser, deleteUser } from "../scripts/user";
 import { db } from "../server";
 
 const usersRouter: Router = Router();
@@ -31,6 +31,12 @@ usersRouter.put("/:userId/update", async (req, res) => {
 		res.json({ message: "forbidden" });
 	}
 	console.log("PUT was sent");
+});
+
+usersRouter.delete("/:userId/delete", async (req, res) => {
+    await deleteUser(db, "users", req.params.userId);
+    res.json({ message: "DELETE was sent" });
+    console.log("DELETE was sent");
 });
 
 export { usersRouter };

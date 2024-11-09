@@ -55,10 +55,10 @@ const setUser = async (
 };
 
 const deleteUser = async (db: Firestore, docPath: string, docId: string) => {
-  const userRef = doc(db, docPath, docId);
-  const userSnap = await getDoc(userRef);
-  if (userSnap.exists()) {
-    await deleteDoc(userRef);
+  const docRef = doc(db, docPath, docId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    await deleteDoc(docRef);
   } else {
     console.log("User does not exist. Nothing to delete.")
   }
