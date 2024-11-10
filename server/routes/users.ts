@@ -16,7 +16,7 @@ usersRouter.get("/:userId", async (req, res) => {
 	console.log("GET was sent");
 });
 
-usersRouter.put("/:userId/update", async (req, res) => {
+usersRouter.put("/update/:userId", async (req, res) => {
 	if (req.body.userId === undefined) {
 		const user = await getUser(db, "users", req.params.userId);
 		if (user !== null) {
@@ -33,7 +33,7 @@ usersRouter.put("/:userId/update", async (req, res) => {
 	console.log("PUT was sent");
 });
 
-usersRouter.delete("/:userId/delete", async (req, res) => {
+usersRouter.delete("/delete/:userId", async (req, res) => {
     await deleteUser(db, "users", req.params.userId);
     res.json({ message: "DELETE was sent" });
     console.log("DELETE was sent");
