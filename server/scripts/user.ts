@@ -1,5 +1,4 @@
 import { Firestore, deleteDoc, setDoc, getDoc, doc } from "firebase/firestore";
-import { json } from "stream/consumers";
 
 interface UserData {
   userId: string,
@@ -16,16 +15,6 @@ interface NewUserData {
   userEmail: string,
   userRole: string,
 }
-
-const addUser = async (db: Firestore, collPath: string, data: UserData) => {
-  const userRef = doc(db, collPath, data.userId);
-  const userSnap = await getDoc(userRef);
-  if (!userSnap.exists()) {
-    await setDoc(userRef, data);
-  } else {
-    console.log("User already exists. Nothing to add.")
-  }
-};
 
 const getUser = async (db: Firestore, docPath: string, docId: string) => {
   const docRef = doc(db, docPath, docId);
@@ -59,9 +48,10 @@ const deleteUser = async (db: Firestore, docPath: string, docId: string) => {
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     await deleteDoc(docRef);
+    return `User ${docId} deleted.`
   } else {
-    console.log("User does not exist. Nothing to delete.")
+    return "User does not exist. Nothing to delete."
   }
 };
 
-export { addUser, getUser, setUser, deleteUser };
+export { getUser, setUser, deleteUser };

@@ -1,41 +1,49 @@
 import { Router } from "express";
-import { addUser, getUser, setUser, deleteUser } from "../scripts/user";
+import { getUser, setUser, deleteUser } from "../scripts/user";
 import { db } from "../server";
+import { setDoc, getDoc, doc } from "firebase/firestore";
 
 const usersRouter: Router = Router();
 
 usersRouter.post("/new", async (req, res) => {
-	await addUser(db, "users", req.body);
-	res.send("POST was sent with data: " + req.body);
-	console.log("POST was sent");
+	const userReference = doc(db, "users", req.body.id);
+  const userSnapshot = await getDoc(userReference);
+  if (userSnapshot.exists()) {
+    console.log("User already exists");
+		res.json({ message: "User already exists" });
+  } else {
+		await setDoc(userReference, req.body);
+		const addedUser = await getDoc(userReference);
+		res.json({ message: "User added", data: req.body, result: addedUser.data()});
+  }
 });
 
-usersRouter.get("/:userId", async (req, res) => {
-	const target = await getUser(db, "users", req.params.userId);
-	res.json(target);
-	console.log("GET was sent");
+usersRouter.get("/:id", async (req, res) => {
+	const docRef = doc(db, "users", req.params.id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    console.log(docSnap.data())
+		res.json({ message: "User found", data: docSnap.data()})
+  } else {
+    console.log("User does not exist.")
+		res.status(404).json({ message: `User ${req.params.id} not found` })
+  }
 });
 
-usersRouter.put("/update/:userId", async (req, res) => {
-	if (req.body.userId === undefined) {
-		const user = await getUser(db, "users", req.params.userId);
-		if (user !== null) {
-			await setUser(db, "users", req.params.userId, req.body);
-			res.json({
-				message: "user updated",
-			});
+usersRouter.put("/update/:id", async (req, res) => {
+	  const docRef = doc(db, "users", req.params.id)
+		const docSnap = await getDoc(docRef);
+	  if (docSnap.exists()) {
+			await setDoc(docRef, req.body, { merge: true });
+			res.json({ message: `User ${req.params.id} updated`, data: req.body })
 		} else {
-			res.json({ message: "user not found" });
+			res.status(404).json({ message: `User ${req.params.id} not found` })
 		}
-	} else {
-		res.json({ message: "forbidden" });
-	}
-	console.log("PUT was sent");
 });
 
-usersRouter.delete("/delete/:userId", async (req, res) => {
-    await deleteUser(db, "users", req.params.userId);
-    res.json({ message: "DELETE was sent" });
+usersRouter.delete("/delete/:id", async (req, res) => {
+    const result = await deleteUser(db, "users", req.params.id);
+    res.json({ message: result });
     console.log("DELETE was sent");
 });
 

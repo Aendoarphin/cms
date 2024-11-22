@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { addUser } from "../scripts/user";
 import { db } from "../server";
 
 const rootRouter: Router = Router();
