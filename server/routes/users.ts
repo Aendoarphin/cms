@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { getUser, setUser, deleteUser } from "../scripts/user";
 import { db } from "../server";
-import { setDoc, getDoc, doc } from "firebase/firestore";
+import { setDoc, getDoc, doc, deleteDoc } from "firebase/firestore";
 
 const usersRouter: Router = Router();
 
@@ -42,9 +41,14 @@ usersRouter.put("/update/:id", async (req, res) => {
 });
 
 usersRouter.delete("/delete/:id", async (req, res) => {
-    const result = await deleteUser(db, "users", req.params.id);
-    res.json({ message: result });
-    console.log("DELETE was sent");
+    const docRef = doc(db, "users", req.params.id);
+	const docSnap = await getDoc(docRef);
+	if (docSnap.exists()) {
+		await deleteDoc(docRef);
+		res.json({ message: `User ${req.params.id} deleted.` })
+	} else {
+		res.json({ message: `User ${req.params.id} does not exist. Nothing to delete.` })
+	}
 });
 
 export { usersRouter };
