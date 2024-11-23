@@ -7,6 +7,7 @@ import { usersRouter } from "./routes/users";
 import { ticketsRouter } from "./routes/tickets";
 import { rootRouter } from "./routes/root";
 import dotenv from "dotenv";
+import { logMethod, timeStamp } from "./middleware";
 
 dotenv.config({path: "../.env"});
 const app = express();
@@ -14,6 +15,8 @@ const app = express();
 app.use(cors({origin: ["http://localhost:5173"]}));
 app.use(express.json());
 app.use(express.static("public"));
+app.use(timeStamp())
+app.use(logMethod())
 
 // Routes
 const routes = [
