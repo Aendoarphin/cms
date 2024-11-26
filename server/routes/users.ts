@@ -53,10 +53,15 @@ usersRouter.put("/update/:id", async (req, res) => {
   const docRef = doc(db, "users", req.params.id);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
-    await setDoc(docRef, req.body, { merge: true });
-    res.json({ message: `User ${req.params.id} updated`, data: req.body });
+    if (req.body.id !== undefined) {
+      res.statusCode = 403;
+      res.json('Cannot update ID');
+    } else {
+      await setDoc(docRef, req.body, { merge: true });
+      res.json({ message: `User ${req.params.id} updated`, data: req.body });
+    }
   } else {
-    res.status(404).json({ message: `User ${req.params.id} not found` });
+      res.status(404).json({ message: `User ${req.params.id} not found` });
   }
 });
 

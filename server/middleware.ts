@@ -1,13 +1,11 @@
 import express from "express";
 
-const timeStamp = () => (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const time = new Date();
-    console.log(time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds());
-    next();
-}
-
 const logMethod = () => (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.log(`${req.method} was sent to ${req.url}`);
+    const time = new Date();
+    const msg = `${time.toTimeString()} | ${req.method} was sent to ${req.url}`
+    for (let i = 0; i < msg.length; i++) process.stdout.write("-");
+    console.log("");
+    console.log(msg);
     next();
   }
 
@@ -21,4 +19,4 @@ const authorize = () => (req: express.Request, res: express.Response, next: expr
     next();
   }
 
-export { logMethod, timeStamp, authenticate, authorize }
+export { logMethod, authenticate, authorize }
