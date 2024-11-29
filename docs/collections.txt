@@ -1,13 +1,13 @@
 1. Users
   Description: Stores information about users of the system.
   Fields:
-    userId: Unique identifier for the user.
+    id: Unique identifier for the user.
     username: The user's chosen username.
     password: Hashed password for authentication.
     email: User's email address.
     role: User's role (e.g., admin, agent, customer).
-    createdAt: Timestamp for when the user was created.
-    updatedAt: Timestamp for the last update to the user's information.
+    created: Timestamp for when the user was created.
+    updated: Timestamp for the last update to the user's information.
 
 2. Tickets
   Description: Contains information about each ticket raised in the system.
@@ -17,9 +17,9 @@
     description: Detailed description of the issue.
     status: Current status of the ticket (e.g., open, in progress, resolved).
     priority: Priority level (e.g., low, medium, high).
-    createdAt: Timestamp for when the ticket was created.
+    creaded: Timestamp for when the ticket was created.
     updatedAt: Timestamp for the last update to the ticket.
-    userId: Reference to the users collection (who created the ticket).
+    id: Reference to the users collection (who created the ticket).
     assignedTo: Reference to the users collection (agent assigned to the ticket).
 
 3. Comments
@@ -27,9 +27,9 @@
   Fields:
     commentId: Unique identifier for the comment.
     ticketId: Reference to the tickets collection.
-    userId: Reference to the users collection (who made the comment).
+    id: Reference to the users collection (who made the comment).
     content: The text of the comment.
-    createdAt: Timestamp for when the comment was made.
+    creaded: Timestamp for when the comment was made.
 
 4. Categories
   Description: Represents categories for organizing tickets.
@@ -37,7 +37,7 @@
     categoryId: Unique identifier for the category.
     name: Name of the category (e.g., software, hardware).
     description: Brief description of the category.
-    createdAt: Timestamp for when the category was created.
+    creaded: Timestamp for when the category was created.
 
 5. Attachments
   Description: Stores files attached to tickets.
@@ -47,13 +47,13 @@
     fileName: Name of the file.
     filePath: Path to the stored file.
     uploadedAt: Timestamp for when the file was uploaded.
-    userId: Reference to the users collection (who uploaded the file).
+    id: Reference to the users collection (who uploaded the file).
 
 6. User Sessions
   Description: Stores session information for each user.
   Fields:
     sessionId: Unique identifier for the session.
-    userId: Reference to the users collection.
-    createdAt: Timestamp for when the session was created.
+    id: Reference to the users collection.
+    creaded: Timestamp for when the session was created.
     expiresAt: Timestamp for when the session expires.
   
