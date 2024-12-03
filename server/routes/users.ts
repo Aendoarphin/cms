@@ -14,6 +14,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { v4 as uuid } from "uuid";
+import bcrypt from "bcrypt";
 
 const usersRouter: Router = Router();
 
@@ -33,7 +34,10 @@ async function checkUserExists(
 usersRouter
   // CREATE NEW USER
   .post("/new", async (req, res) => {
-    const { email, username } = req.body;
+    const { email, username, password } = req.body;
+    const hash = await bcrypt.hash(password, 10);
+
+    req.body.password = hash;
 
     if (!email || !username) {
       throw new Error("Email and username are required");
