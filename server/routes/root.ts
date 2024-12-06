@@ -6,7 +6,7 @@ const rootRouter: Router = Router();
 
 rootRouter
     .get("/", (req, res) => {
-        res.send("GET");
+        res.send("home");
     })
 
 export { rootRouter }

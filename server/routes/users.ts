@@ -32,7 +32,8 @@ async function checkUserExists(
 }
 
 usersRouter
-	// CREATE NEW USER
+
+	// CREATE NEW USER ###########################################################
 	.post("/new", async (req, res) => {
 		const { email, username, password } = req.body;
 		const hash = await bcrypt.hash(password, 10);
@@ -66,7 +67,9 @@ usersRouter
 		}
 		res.status(500).json({ message: "User creation failed" });
 	})
-	// GET ALL
+
+
+	// GET ALL ###################################################################
 	.get("/all", async (req, res) => {
 		const allUsers: Array<Object> = [];
 		const querySnapshot = await getDocs(collection(db, "users"));
@@ -74,9 +77,10 @@ usersRouter
 			allUsers.push(JSON.parse(JSON.stringify(doc.data())));
 		});
 		res.status(200).json({ message: "All users", data: allUsers });
-	});
-// GET BY EMAIL
-usersRouter
+	})
+
+
+	// GET BY EMAIL ##############################################################
 	.get("/", async (req, res) => {
 		const { email } = req.query;
 
@@ -84,17 +88,21 @@ usersRouter
 			const querySnapshot = await getDocs(
 				query(collection(db, "users"), where("email", "==", email))
 			);
-      const user = querySnapshot.docs[0].data()
-			res.status(200).json({
-				message: "User found",
-				data: user,
-			});
+
+			if (querySnapshot.docs.length > 0) {
+				const user = querySnapshot.docs[0].data();
+				res.status(200).json({
+					message: "User found",
+					data: user,
+				});
+			} else {
+				res.status(404).json({ message: "User not found" });
+			}
 		} else {
-			// handle error: no query parameter provided
 			res.status(400).json({ message: "Missing query parameter" });
 		}
 	})
-	// UPDATE
+	// UPDATE ####################################################################
 	.put("/update/:username", async (req, res) => {
 		const q = query(
 			collection(db, "users"),
@@ -106,10 +114,10 @@ usersRouter
 			return doc.data().username === req.params.username;
 		});
 
-		const allEmails: Array<string> = await (
+		const allEmails: Array<string> = (
 			await getDocs(collection(db, "users"))
 		).docs.map((doc) => doc.data().email);
-		const allUsernames: Array<string> = await (
+		const allUsernames: Array<string> = (
 			await getDocs(collection(db, "users"))
 		).docs.map((doc) => doc.data().username);
 
@@ -131,9 +139,14 @@ usersRouter
 			// Check if 'created' field exists and if so, remove from body
 			let newData = {};
 			const creationDateTemp = targetUser.data().created;
-			if (req.body.created) {
+			if (req.body.created || req.body.updated) {
 				delete req.body.created;
+				delete req.body.updated;
 				newData = { ...req.body };
+			}
+			if (req.body.password) {
+				const hash = await bcrypt.hash(req.body.password, 10);
+				newData = { ...req.body, password: hash };
 			}
 			// Insert new data, initial creation date, and updated date
 			await updateDoc(targetUser.ref, {
@@ -141,7 +154,7 @@ usersRouter
 				created: creationDateTemp,
 				updated: new Date().toLocaleString(),
 			});
-			res.status(200).json({ message: `User ${req.params.username} updated.` });
+			res.status(200).json({ message: `User ${req.params.username} updated.`, newInfo: newData });
 			return;
 		}
 
@@ -149,7 +162,9 @@ usersRouter
 			message: `User ${req.params.username} does not exist. Nothing to update.`,
 		});
 	})
-	// DELETE
+
+
+	// DELETE ####################################################################
 	.delete("/delete/:username", async (req, res) => {
 		const q = query(
 			collection(db, "users"),

@@ -1,27 +1,37 @@
-import { useState, useEffect } from 'react'
-import './App.css'
-import axios from 'axios'
+import "./App.css";
+import axios from "axios";
+import { useState, useEffect } from "react";
+
+const process = { env: import.meta.env };
 
 function App() {
-  const [array, setArray] = useState([])
-
-  const fetchAPI = async () => {
-    const response = await axios.get("http://localhost:3000/api")
-    console.log(response.data["Phone Brands"])
-    setArray(response.data.phones)
+  interface UserData {
+    data: { email: string; username: string; role: string }[];
   }
 
+  const [users, setUsers] = useState<UserData | null>(null);
+
   useEffect(() => {
-    fetchAPI()
-  }, [])
+    const getData = async () => {
+      const response = await axios.get(`${process.env.VITE_HOST}/users/all`);
+      setUsers(response.data);
+    };
+    getData();
+  }, []);
 
   return (
     <>
-      {array.map((phone, index) => (
-        <div key={index}> <h1>{phone}</h1> </div>
-      ))}
+      {users &&
+        users.data.map((item: any) => (
+          <div key={users.data.indexOf(item)}>
+            <h3>User {users.data.indexOf(item)}</h3>
+            <p>{item.email}</p>
+            <p>{item.username}</p>
+            <p>{item.role}</p>
+          </div>
+        ))}
     </>
-  )
+  );
 }
 
-export default App
+export default App;

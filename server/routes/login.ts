@@ -1,7 +1,9 @@
 import dotenv from "dotenv";
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import { getDoc, collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
+import jwt from "jsonwebtoken";
+
 import { db } from "../server";
 dotenv.config({ path: "../.env" });
 
@@ -30,9 +32,11 @@ loginRouter.get("/", async (req, res) => {
 
   if (isUser) {
     // create jwt
-    res.status(200).json(targetUser);
+    const token = jwt.sign(JSON.parse(JSON.stringify(targetUser)), process.env.JWT_SECRET as string, { expiresIn: "1m" });
+    res.cookie("token", token, { httpOnly: true });
+    res.status(200).json({ message: "Login successful", cookies: req.cookies });
   } else {
-    res.status(401).json({ message: "Password incorrect" });
+    res.status(401).json({ message: "Login failed" });
   }
 });
 
