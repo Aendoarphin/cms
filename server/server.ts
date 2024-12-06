@@ -6,6 +6,7 @@ import { getFirestore } from "firebase/firestore";
 import { usersRouter } from "./routes/users";
 import { ticketsRouter } from "./routes/tickets";
 import { rootRouter } from "./routes/root";
+import { loginRouter } from "./routes/login";
 import dotenv from "dotenv";
 import { logMethod } from "./middleware";
 
@@ -22,6 +23,7 @@ const routes = [
   { path: "/", router: rootRouter },
   { path: "/users", router: usersRouter },
   { path: "/tickets", router: ticketsRouter },
+  { path: "/login", router: loginRouter },
 ];
 routes.forEach((route) => app.use(route.path, route.router));
 
