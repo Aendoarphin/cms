@@ -31,13 +31,15 @@ loginRouter.get("/", async (req, res) => {
   }
 
   if (isUser) {
-    // create jwt
-    const token = jwt.sign(JSON.parse(JSON.stringify(targetUser)), process.env.JWT_SECRET as string, { expiresIn: "1m" });
+    // Generate JWT if login successful
+    const token = jwt.sign(JSON.parse(JSON.stringify(targetUser)), process.env.JWT_SECRET as string, { expiresIn: "15m" });
     res.cookie("token", token, { httpOnly: true });
-    res.status(200).json({ message: "Login successful", cookies: req.cookies });
-  } else {
-    res.status(401).json({ message: "Login failed" });
+    //Store token
+    res.status(200).json({ message: "Login successful", token, user: targetUser });
+    return;
   }
+
+  res.status(401).json({ message: "Login failed" });
 });
 
 export { loginRouter };
