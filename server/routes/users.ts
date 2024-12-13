@@ -110,7 +110,7 @@ usersRouter
       const user = targetUser.docs.map((doc) => doc.data())[0];
       res
         .status(200)
-        .json({ data: user, type: typeof user, docId: targetUser.docs[0].id });
+        .json(user);
       return;
     }
 
