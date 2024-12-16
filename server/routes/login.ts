@@ -1,45 +1,50 @@
 import dotenv from "dotenv";
-import { Router } from "express";
 import bcrypt from "bcrypt";
-import { collection, getDocs } from "firebase/firestore";
 import jwt from "jsonwebtoken";
-
+import { Router } from "express";
+import cookieParser from "cookie-parser";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../server";
+
 dotenv.config({ path: "../.env" });
 
 const loginRouter: Router = Router();
 
+loginRouter.use(cookieParser());
+
 interface User {
-	email: string;
+  email: string;
   password: string;
 }
 
 loginRouter.get("/", async (req, res) => {
-	const allUsers: Array<User> = [];
-	const querySnapshot = await getDocs(collection(db, "users"));
-	querySnapshot.forEach((doc) => {
-		allUsers.push(JSON.parse(JSON.stringify(doc.data())));
-	});
+  const allUsers: Array<User> = [];
+  const querySnapshot = await getDocs(collection(db, "users"));
+  querySnapshot.forEach((doc) => {
+    allUsers.push(JSON.parse(JSON.stringify(doc.data())));
+  });
 
-  const targetUser = allUsers.find((user) => user.email === req.query.email)
-  const password = targetUser?.password
-
-  let isUser = false
+  const targetUser = allUsers.find((user) => user.email === req.query.email);
 
   if (targetUser !== undefined) {
-    isUser = await bcrypt.compare(req.body.password, password as string);
+    const isUser = await bcrypt.compare(
+      req.body.password,
+      targetUser.password as string
+    );
+    if (isUser) {
+      const newToken = jwt.sign(targetUser, process.env.JWT_SECRET as string);
+      res.cookie("token", newToken, {
+        httpOnly: true,
+        // secure: true,
+      });
+      res.setHeader("Authorization", `Bearer ${newToken}`);
+      res
+        .status(200)
+        .json({ message: "Login successful", cookies: req.cookies });
+      return;
+    }
   }
-
-  if (isUser) {
-    // Generate JWT if login successful
-    const token = jwt.sign(JSON.parse(JSON.stringify(targetUser)), process.env.JWT_SECRET as string, { expiresIn: "15m" });
-    res.cookie("token", token, { httpOnly: true });
-    //Store token
-    res.status(200).json({ message: "Login successful", token, user: targetUser });
-    return;
-  }
-
-  res.status(401).json({ message: "Login failed" });
+  res.status(401).json({ message: "Login failed", extra: !targetUser ? "User not found" : undefined });
 });
 
 export { loginRouter };

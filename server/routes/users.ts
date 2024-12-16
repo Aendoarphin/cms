@@ -15,12 +15,12 @@ import {
 } from "firebase/firestore";
 import { v4 as uuid } from "uuid";
 import bcrypt from "bcrypt";
-import { authorize } from "../middleware";
+import jwt from "jsonwebtoken";
 
 const usersRouter: Router = Router();
 // usersRouter.use(authorize());
 
-const checkUserExists = async (
+const docExists = async (
   collectionRef: CollectionReference,
   fieldName: string,
   fieldValue: string
@@ -50,12 +50,12 @@ usersRouter
       return;
     }
 
-    const emailExists = await checkUserExists(
+    const emailExists = await docExists(
       collection(db, "users"),
       "email",
       email
     );
-    const usernameExists = await checkUserExists(
+    const usernameExists = await docExists(
       collection(db, "users"),
       "username",
       username
@@ -69,8 +69,10 @@ usersRouter
 
     const newUserRef = doc(db, "users", uuid());
 		const userDoc = await getDoc(newUserRef);
+    const jwtToken = jwt.sign(JSON.parse(JSON.stringify(req.body)), process.env.JWT_SECRET as string, { expiresIn: "1h" });
 
     await setDoc(newUserRef, {
+      token: jwtToken,
 			docId: userDoc.id,
       ...req.body,
       created: new Date().toLocaleString(),
@@ -78,6 +80,8 @@ usersRouter
     });
     const newUser = await getDoc(newUserRef);
     if (newUser.exists()) {
+      res.cookie("token", jwtToken, { httpOnly: true });
+      res.setHeader("Authorization", `Bearer ${jwtToken}`);
       res.status(201).json({ message: "User created", data: newUser.data() });
       return;
     }
@@ -97,7 +101,7 @@ usersRouter
   // READ BY EMAIL ##############################################################
   .get("/", async (req, res) => {
     const { username, email } = req.query;
-    let emailExists = await checkUserExists(
+    let emailExists = await docExists(
       collection(db, "users"),
       "email",
       email as string
