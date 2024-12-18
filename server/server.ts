@@ -1,13 +1,13 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-
 import { usersRouter } from "./routes/users";
 import { ticketsRouter } from "./routes/tickets";
 import { rootRouter } from "./routes/root";
 import { loginRouter } from "./routes/login";
-import dotenv from "dotenv";
 import { logMethod } from "./middleware";
 
 dotenv.config({path: "../.env"});
@@ -17,6 +17,8 @@ app.use(cors({origin: ["http://localhost:5173"]}));
 app.use(express.json());
 app.use(express.static("public"));
 app.use(logMethod())
+app.use(cookieParser());
+
 
 // Routes
 const routes = [

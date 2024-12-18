@@ -2,15 +2,12 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Router } from "express";
-import cookieParser from "cookie-parser";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../server";
 
 dotenv.config({ path: "../.env" });
 
 const loginRouter: Router = Router();
-
-loginRouter.use(cookieParser());
 
 interface User {
   email: string;

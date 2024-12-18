@@ -1,0 +1,9 @@
+{
+  "iss": "https://example.com",
+  "aud": "https://client.example.com",
+  "exp": 1643723900,
+  "iat": 1643720300,
+  "sub": "user123",
+  "isAdmin": true,
+  "userLoggedIn": true
+}

@@ -1,0 +1,33 @@
+Token refresh logic
+
+const refreshToken = (oldToken) => {
+  try {
+    // Validate the old token to check if expired
+    const decodedToken = jwt.verify(oldToken, process.env.JWT_SECRET);
+    if (!decodedToken) {
+      throw new Error('Invalid token');
+    }
+
+    // Check if the token has 10 minutes remaining
+    const tokenExpiration = decodedToken.exp;
+    const currentTime = Date.now() / 1000;
+    if (tokenExpiration - currentTime < 600) { // 10 minutes
+      // Generate a new token with a new expiration time
+      const newToken = jwt.sign(decodedToken.payload, process.env.JWT_SECRET, {
+        expiresIn: '10m', // or use a dynamic expiration time
+      });
+
+      // Update the user's cookie securely
+      const cookieOptions = {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+      };
+      res.cookie('token', newToken, cookieOptions);
+    }
+  } catch (error) {
+    // Handle error
+    console.error('Error refreshing token:', error);
+    // Return an error response or redirect to an error page
+  }
+};

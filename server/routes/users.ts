@@ -18,7 +18,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const usersRouter: Router = Router();
-// usersRouter.use(authorize());
 
 const docExists = async (
   collectionRef: CollectionReference,
